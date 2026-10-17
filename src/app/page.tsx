@@ -1,10 +1,12 @@
 // 門戶首頁。Server Component：在伺服器端讀頂層 cookie、用 JWKS 本地驗章認出使用者。
 // 沒有 "use client"、沒有 useState 假登入——身分完全來自跨網域 cookie 的本地驗章。
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { Header } from "@/components/Header";
 import { HeroSection } from "@/components/HeroSection";
 import { ServiceCard } from "@/components/ServiceCard";
 import { WarningBanner } from "@/components/WarningBanner";
+import { ElectionBanners } from "@/components/ElectionBanner";
 import { AdminAccessCard } from "@/components/AdminAccessCard";
 import { services, CATEGORY_SECTIONS } from "@/config/services";
 import { tpass, portalConfig, loginUrlFor, deniedUrlFor } from "@/config/portal";
@@ -32,6 +34,9 @@ export default async function HomePage({
   const authPerm = session ? tpass.permOf(session, "auth") : null;
   const canManagePermissions = authPerm ? authPerm.role !== "default" : false;
 
+  // 選舉橫幅只給登入、且沒被 vote 停權的人看——被停權的人點進去也只會撞牆。
+  const showElections = session ? tpass.permOf(session, "vote").read : false;
+
   return (
     <>
       <Header
@@ -46,6 +51,12 @@ export default async function HomePage({
           <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-6">
             <WarningBanner reason={ownPerm.reason} until={ownPerm.until} />
           </div>
+        )}
+
+        {showElections && (
+          <Suspense fallback={null}>
+            <ElectionBanners />
+          </Suspense>
         )}
 
         <HeroSection
