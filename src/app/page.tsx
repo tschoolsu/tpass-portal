@@ -8,6 +8,7 @@ import { ServiceCard } from "@/components/ServiceCard";
 import { WarningBanner } from "@/components/WarningBanner";
 import { ElectionBanners } from "@/components/ElectionBanner";
 import { AdminAccessCard } from "@/components/AdminAccessCard";
+import { BirthdayCard } from "@/components/BirthdayCard";
 import { services, CATEGORY_SECTIONS } from "@/config/services";
 import { tpass, portalConfig, loginUrlFor, deniedUrlFor } from "@/config/portal";
 
@@ -88,6 +89,7 @@ export default async function HomePage({
                   {key === "governance" && canManagePermissions && (
                     <AdminAccessCard url={portalConfig.adminUrl} />
                   )}
+                  {key === "service" && isLoggedIn && <BirthdayCard />}
                 </div>
               </div>
             );
